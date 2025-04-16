@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .chat-container {
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+        .user-message {
+            background-color: #e2f5ff;
+            border-radius: 18px 18px 0 18px;
+            padding: 12px 16px;
+            margin: 8px 0;
+            max-width: 80%;
+            align-self: flex-end;
+        }
+        .bot-message {
+            background-color: #f0f0f0;
+            border-radius: 18px 18px 18px 0;
+            padding: 12px 16px;
+            margin: 8px 0;
+            max-width: 80%;
+            align-self: flex-start;
+        }
+        .agent-tag {
+            font-size: 0.7rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .thumbnail {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: cover;
+            margin-top: 8px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-2xl font-bold text-center mb-6">Real Estate Assistant</h1>
+            
+            <div class="chat-container flex flex-col mb-4" id="chatContainer">
+                <div class="bot-message">
+                    <div class="agent-tag">System</div>
+                    <p>Welcome to the Real Estate Assistant! I can help with property issues (upload images for best results) or answer tenancy questions. How can I assist you today?</p>
+                </div>
+            </div>
+            
+            <form id="chatForm" class="flex flex-col">
+                <div class="flex items-center mb-4">
+                    <label for="imageUpload" class="cursor-pointer bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Upload Image
+                    </label>
+                    <input type="file" id="imageUpload" name="image" accept="image/*" class="hidden">
+                    <div id="imagePreviewContainer" class="hidden mr-2">
+                        <img id="imagePreview" class="h-10 w-10 object-cover rounded">
+                        <button type="button" id="removeImage" class="absolute -mt-2 -ml-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">×</button>
+                    </div>
+                    <input type="text" id="messageInput" class="flex-grow border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type your message here...">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const sessionId = Math.random().toString(36).substring(2, 15);
+        let isWaitingForResponse = false;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatForm = document.getElementById('chatForm');
+            const chatContainer = document.getElementById('chatContainer');
+            const messageInput = document.getElementById('messageInput');
+            const imageUpload = document.getElementById('imageUpload');
+            const imagePreview = document.getElementById('imagePreview');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const removeImageButton = document.getElementById('removeImage');
+            
+            // Image upload preview
+            imageUpload.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.setAttribute('src', e.target.result);
+                        imagePreviewContainer.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // Remove image
+            removeImageButton.addEventListener('click', function() {
+                imageUpload.value = '';
+                imagePreviewContainer.classList.add('hidden');
+            });
+            
+            // Form submission
+            chatForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (isWaitingForResponse) return;
+                
+                const message = messageInput.value.trim();
+                if (!message && !imageUpload.files[0]) return;
+                
+                // Add user message to chat
+                addMessage('You', message, 'user', imageUpload.files[0]);
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Show loading indicator
+                isWaitingForResponse = true;
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'bot-message';
+                loadingDiv.innerHTML = `<div class="agent-tag">System</div><p>Thinking...</p>`;
+                chatContainer.appendChild(loadingDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                // Prepare form data for API call
+                const formData = new FormData();
+                formData.append('message', message);
+                formData.append('session_id', sessionId);
+                if (imageUpload.files[0]) {
+                    formData.append('image', imageUpload.files[0]);
+                }
+                
+                try {
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Remove loading indicator
+                    chatContainer.removeChild(loadingDiv);
+                    
+                    // Add bot message
+                    addMessage(data.agent_name, data.message, 'bot');
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    // Remove loading indicator
+                    chatContainer.removeChild(loadingDiv);
+                    // Show error message
+                    addMessage('System', 'Sorry, there was an error processing your request.', 'bot');
+                }
+                
+                // Reset image upload
+                imageUpload.value = '';
+                imagePreviewContainer.classList.add('hidden');
+                
+                isWaitingForResponse = false;
+            });
+            
+            function addMessage(sender, message, type, image = null) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = type === 'user' ? 'user-message ml-auto' : 'bot-message';
+                
+                let content = `<div class="agent-tag">${sender}</div><p>${message}</p>`;
+                
+                // If there's an image for user messages, add it
+                if (type === 'user' && image) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = e.target.result;
+                        imgElement.className = 'thumbnail';
+                        messageDiv.appendChild(imgElement);
+                    };
+                    reader.readAsDataURL(image);
+                }
+                
+                messageDiv.innerHTML = content;
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>
