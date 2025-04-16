@@ -3,7 +3,6 @@ import uvicorn
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from fastapi.templating import Jinja2Templates
 
 from config import logger
 
