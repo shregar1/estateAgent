@@ -38,7 +38,7 @@ OpenAI API key
 Step 1: Clone the repository
 bash
 git clone https://github.com/shregar1/estateAgent.git
-cd real-estate-chatbot
+cd estateAgent
 Step 2: Set up a virtual environment
 bash
 python -m venv venv
