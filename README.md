@@ -43,21 +43,25 @@ Prerequisites
 Python 3.8+
 OpenAI API key
 ### Step 1: Clone the repository
-bash
+```
 git clone https://github.com/shregar1/estateAgent.git
 cd estateAgent
+```
 ### Step 2: Set up a virtual environment
-bash
+```
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 ### Step 3: Install dependencies
-bash
-pip install fastapi uvicorn langchain langchain-openai python-multipart langgraph pydantic python-dotenv
+```
+pip install fastapi uvicorn langchain langchain-openai python-multipart langgraph pydantic python-dotenv ulid loguru
+```
 ### Step 4: Create .env file with your OpenAI API key
 OPENAI_API_KEY=your_api_key_here
 ### Step 5: Run the application
-bash
+```
 python app.py
+```
 The application will be available at http://localhost:8000
 
 ## Usage Examples
@@ -107,10 +111,10 @@ Would you like more information about tenant protection laws in California?"
 ### Deploy on Heroku
 
 **Create a `Procfile`:**
-```web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-8000}
+```web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-8000}```
 
 **Create a `runtime.txt`:**
-```python-3.9.7
+```python-3.9.7```
 
 **Deploy to Heroku:**
 ```bash
