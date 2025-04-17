@@ -26,7 +26,8 @@ Determines which specialized agent should handle each query
 Routes image-based queries to the Issue Detection Agent
 Routes tenancy questions to the Tenancy FAQ Agent
 Asks clarifying questions when the user's intent is ambiguous
-Issue Detection Agent:
+
+## Issue Detection Agent:
 Analyzes uploaded property images
 Identifies visible issues (water damage, mold, cracks, etc.)
 Provides troubleshooting advice and recommendations
@@ -55,6 +56,8 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 ### Step 3: Install dependencies
 ```
 pip install fastapi uvicorn langchain langchain-openai python-multipart langgraph pydantic python-dotenv ulid loguru
+or
+pip3 install -r requirements.txt
 ```
 ### Step 4: Create .env file with your OpenAI API key
 OPENAI_API_KEY=your_api_key_here
