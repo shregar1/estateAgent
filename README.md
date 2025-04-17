@@ -102,10 +102,13 @@ Would you like more information about tenant protection laws in California?"
 
 ## Deployment Options
 ### Deploy on Heroku
+
 Create a Procfile:
 web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-8000}
+
 Create a runtime.txt:
 python-3.9.7
+
 Deploy to Heroku:
 bash
 heroku create
