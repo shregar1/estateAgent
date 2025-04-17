@@ -110,7 +110,7 @@ Would you like more information about tenant protection laws in California?"
 ```bash web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-8000}```
 
 **Create a `runtime.txt`:**
-```bash python-3.9.7
+```bash python-3.9.7```
 
 **Deploy to Heroku:**
 ```bash
