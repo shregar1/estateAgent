@@ -4,9 +4,12 @@ A sophisticated real estate assistant that combines image analysis and tenancy e
 ## Overview
 This project implements a dual-agent real estate chatbot system with the following capabilities:
 
-### Image Analysis: Detects issues in property photos and provides troubleshooting advice
-### Tenancy Guidance: Answers rental agreement questions and explains tenant/landlord rights
-### Intelligent Routing: Automatically directs queries to the appropriate specialized agent
+### Image Analysis: 
+Detects issues in property photos and provides troubleshooting advice
+### Tenancy Guidance: 
+Answers rental agreement questions and explains tenant/landlord rights
+### Intelligent Routing: 
+Automatically directs queries to the appropriate specialized agent
 
 ## Technology Stack
 ### FastAPI: High-performance web framework
@@ -103,14 +106,14 @@ Would you like more information about tenant protection laws in California?"
 ## Deployment Options
 ### Deploy on Heroku
 
-Create a Procfile:
-    web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-8000}
+**Create a `Procfile`:**
+web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-8000}
 
-Create a runtime.txt:
-    python-3.9.7
+**Create a `runtime.txt`:**
+python-3.9.7
 
-Deploy to Heroku:
-    bash
-    heroku create
-    git push heroku main
+**Deploy to Heroku:**
+```bash
+heroku create
+git push heroku main```
 
